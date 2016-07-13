@@ -48,8 +48,11 @@
 	
 	const canvasEl = document.getElementById("main");
 	
-	canvasEl.height = window.innerHeight;
-	canvasEl.width = window.innerWidth;
+	// canvasEl.width = window.innerWidth;
+	// canvasEl.height = window.innerHeight;
+	
+	canvasEl.width = viewportSize.getWidth() - 5;
+	canvasEl.height = viewportSize.getHeight() - 4;
 	
 	const ctx = canvasEl.getContext('2d');
 	const gameView = new GameView(canvasEl.width, canvasEl.height).start(ctx);
@@ -191,10 +194,16 @@
 	
 	const RADIUS = 20;
 	const VELOCITY = [0, 0];
-	const COLOR = "#1E824C";
+	
+	const COLORS = {
+	  bright: "#0cc9c7",
+	  medium: "#369393",
+	  dim: "#2e4852"
+	};
 	
 	const Player = function (pos, game) {
-	  MovingShape.call(this, pos, VELOCITY, RADIUS, COLOR, game);
+	  this.color = COLORS.bright;
+	  MovingShape.call(this, pos, VELOCITY, RADIUS, this.color, game);
 	};
 	
 	Util.inherits(Player, MovingShape);
