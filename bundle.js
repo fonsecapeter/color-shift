@@ -110,7 +110,9 @@
 	  this.game.render(ctx);
 	  this.isGameOver();
 	
-	  requestAnimationFrame(this.cycle.bind(this, ctx));
+	  if (this.game.isOver() === false ) {
+	    requestAnimationFrame(this.cycle.bind(this, ctx));
+	  }
 	};
 	
 	GameView.prototype.isGameOver = function () {
@@ -125,15 +127,20 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	const Player = __webpack_require__(3);
-	const Shape = __webpack_require__(8);
+	const Shape = __webpack_require__(7);
 	const Util = __webpack_require__(5);
+	const Constants = __webpack_require__(6);
 	
-	const NUM_SHAPES = 40;
+	const NUM_SHAPES = 4;
 	
 	function Game (dimX, dimY) {
 	  this.dimX = dimX;
 	  this.dimY = dimY;
-	  this.shapes = [];
+	  this.shapes = {
+	    bright: [],
+	    medium: [],
+	    dim: []
+	  };
 	
 	  for (let i = 0; i < NUM_SHAPES; i++) {
 	    this.addShape();
@@ -141,8 +148,7 @@
 	
 	  const playerPos = [(dimX / 2), (dimY / 2)];
 	  this.player = new Player(playerPos, this);
-	
-	  this.allShapes = this.shapes.concat([this.player]);
+	  this.shapes.player = [this.player];
 	}
 	
 	Game.prototype.step = function () {
@@ -154,43 +160,96 @@
 	Game.prototype.render = function (ctx) {
 	  ctx.clearRect(0, 0, this.dimX, this.dimY);
 	
-	  this.allShapes.forEach( shape => {
+	  this.forEachShape ( shape => {
 	    shape.render(ctx);
 	  });
+	
+	  this.player.render(ctx);
 	};
 	
 	Game.prototype.checkCollisions = function () {
-	  //
-	};
-	
-	Game.prototype.moveShapes = function () {
-	  this.allShapes.forEach( shape => {
-	    shape.move();
+	  this.forEachShape ( shape => {
+	    if (shape.isCollidedWith(this.player)) {
+	      shape.collidedWithPlayer();
+	    }
 	  });
 	};
 	
-	Game.prototype.addShape = function (pos, velocity, radius) {
-	  if (!pos) {
-	    pos = Util.randomPos(this.dimX, this.dimY);
-	    this.shapes.push(new Shape(pos, this));
-	  } else {
-	    this.shape.push(new Shape(pos, this, radius, velocity));
-	  }
+	Game.prototype.moveShapes = function () {
+	  this.forEachShape(shape => {
+	    shape.move();
+	  });
+	
+	  this.player.move();
 	};
 	
-	Game.removeShape = function (shape) {
-	  const idx = this.allShapes.indexOf(shape);
+	Game.prototype.addShape = function (pos, velocity, radius) {
+	  let shape;
+	  if (!pos) {
+	    pos = Util.randomPos(this.dimX, this.dimY);
+	    shape = new Shape(pos, this);
+	  } else {
+	    shape = new Shape(pos, this, radius, velocity);
+	  }
+	
+	  const clrCode = Object.keys(Constants.COLORS).filter( key => Constants.COLORS[key] === shape.color)[0];
+	
+	  this.shapes[clrCode].push(shape);
+	};
+	
+	Game.prototype.removeShape = function (shape) {
+	  const clrCode = Object.keys(Constants.COLORS).filter( key => Constants.COLORS[key] === shape.color)[0];
+	
+	  const idx = this.shapes[clrCode].indexOf(shape);
 	  if (idx > -1) {
-	    this.allShapes.splice(idx, 1);
+	    this.shapes[clrCode].splice(idx, 1);
 	  }
 	};
 	
 	Game.prototype.isOver = function () {
-	  if (this.allShapes.indexOf(this.player) === -1) {
-	    return true;
-	  } else {
-	    return false;
+	  // Object.keys(this.shapes).forEach ( color => {
+	  console.log(this.shapes);
+	  for (let i = 0; i < Object.keys(this.shapes).length; i ++) {
+	    const color = Object.keys(this.shapes)[i];
+	    if (this.shapes[color].length > 0 && color !== "player") {
+	      return false;
+	    }
 	  }
+	  return true;
+	};
+	
+	Game.prototype.invalidColors = function () {
+	  let colors = {};
+	  Object.keys(Constants.COLORS).forEach( color => {
+	    colors[Constants.COLORS[color]] = 0;
+	  });
+	
+	  this.forEachShape ( shape => {
+	    if (!shape.isPlayer) {
+	      colors[shape.color] += 1;
+	    }
+	  });
+	
+	  let emptyColors = [];
+	  Object.keys(colors).forEach( color => {
+	    if (colors[color] < 1) {
+	      emptyColors.push(color);
+	    }
+	  });
+	
+	  if (emptyColors.length < Object.keys(Constants.COLORS).length - 1) {
+	    emptyColors.push(this.player.color);
+	  }
+	
+	  return emptyColors;
+	};
+	
+	Game.prototype.forEachShape = function (callback) {
+	  Object.keys(this.shapes).forEach( color => {
+	    this.shapes[color].forEach ( shape => {
+	      callback(shape);
+	    });
+	  });
 	};
 	
 	module.exports = Game;
@@ -202,7 +261,7 @@
 
 	const MovingShape = __webpack_require__(4);
 	const Util = __webpack_require__(5);
-	const Constants = __webpack_require__(7);
+	const Constants = __webpack_require__(6);
 	
 	const RADIUS = 16;
 	const VELOCITY = [0, 0];
@@ -225,9 +284,10 @@
 
 /***/ },
 /* 4 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	// const Util = require('./util');
+	const Util = __webpack_require__(5);
+	const Constants = __webpack_require__(6);
 	
 	function MovingShape (pos, velocity, radius, color, game) {
 	  this.pos = pos;
@@ -250,7 +310,7 @@
 	  );
 	
 	  if (this.isPlayer) {
-	    ctx.lineWidth = 6;
+	    ctx.lineWidth = Constants.PLAYER_STROKE;
 	    ctx.strokeStyle = this.color;
 	    ctx.stroke();
 	  } else {
@@ -261,11 +321,10 @@
 	
 	MovingShape.prototype.move = function () {
 	  this.ensureBounce(this.pos);
-	  // if ((Math.abs(this.velocity[0]) < 1) &&
-	  //     (Math.abs(this.velocity[1]) < 1 )) {
-	  //       this.velocity = Util.randomVec();
-	  //     }
-	  this.windResit(this.velocity);
+	
+	  if (this.isPlayer) {
+	    this.windResit(this.velocity);
+	  }
 	
 	  this.pos[0] = this.pos[0] + (this.velocity[0]);
 	  this.pos[1] = this.pos[1] + (this.velocity[1]);
@@ -292,17 +351,22 @@
 	MovingShape.prototype.ensureBounce = function (pos) {
 	  const bounce = this.outOfBounds(pos) || { axis: null, negative: false };
 	
+	  let damping = -1;
+	  if (this.isPlayer) {
+	    damping = -0.9;
+	  }
+	
 	  if (bounce.axis === 'x') {
 	    if (bounce.negative) { // moving left
-	      if (this.velocity[0] < 0) { this.velocity[0] *= -0.95; }
+	      if (this.velocity[0] < 0) { this.velocity[0] *= damping; }
 	    } else {                         // moving right
-	      if (this.velocity[0] > 0) { this.velocity[0] *= -0.95; }
+	      if (this.velocity[0] > 0) { this.velocity[0] *= damping; }
 	    }
 	  } else if (bounce.axis === 'y') {
 	    if (bounce.negative) { // moving up
-	      if (this.velocity[1] < 0) { this.velocity[1] *= -0.95; }
+	      if (this.velocity[1] < 0) { this.velocity[1] *= damping; }
 	    } else {                         // moving down
-	      if (this.velocity[1] > 0) { this.velocity[1] *= -0.95; }
+	      if (this.velocity[1] > 0) { this.velocity[1] *= damping; }
 	    }
 	  }
 	};
@@ -321,11 +385,15 @@
 	};
 	
 	MovingShape.prototype.collidedWithPlayer = function () {
-	  if (this.color === this.game.player.color) {
+	  if (this.color === this.game.player.color && !this.isPlayer) {
 	    this.radius -= 1;
 	
 	    if (this.radius <= 1) {
 	      this.game.removeShape(this);
+	
+	      let invalidColors = this.game.invalidColors();
+	      (invalidColors.length >= Object.keys(Constants.COLORS).length) ? invalidColors = [] : invalidColors = invalidColors;
+	      this.game.player.color = Util.randomColor(invalidColors);
 	    }
 	  }
 	};
@@ -350,7 +418,7 @@
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
-	const Constants = __webpack_require__(7);
+	const Constants = __webpack_require__(6);
 	
 	const Util = {
 	  inherits (Child, Parent) {
@@ -374,27 +442,40 @@
 	    return [x, y];
 	  },
 	
-	  randomColor () {
+	  randomColor (invalidColors) {
+	
 	    const codes = Object.keys(Constants.COLORS);
 	    const codeSample = codes[Math.floor(Math.random() * Object.keys(Constants.COLORS).length)];
 	
-	    return Constants.COLORS[codeSample];
+	    const sampledColor = Constants.COLORS[codeSample];
+	    if (invalidColors && invalidColors.indexOf(sampledColor) !== -1) {
+	      return Util.randomColor(invalidColors);
+	    } else {
+	      return sampledColor;
+	    }
 	  },
 	
 	  randomPos (maxWidth, maxHeight) {
 	    return [
-	      Math.random() * maxWidth,
-	      Math.random() * maxWidth
+	      Math.floor((Math.random() * (maxWidth - Constants.MAX_RADIUS + 1)) + Constants.MAX_RADIUS),
+	      Math.floor((Math.random() * (maxHeight - Constants.MAX_RADIUS + 1)) + Constants.MAX_RADIUS)
 	    ];
+	  },
+	
+	  randomRadius () {
+	    return Math.floor((Math.random() * (Constants.MAX_RADIUS - 6 + 1)) + 6);
 	  }
 	};
 	
 	module.exports = Util;
+	
+	window.maxWidth = viewportSize.getWidth() - 5;
+	window.maxHeight = viewportSize.getHeight() - 4;
+	window.Constants = Constants;
 
 
 /***/ },
-/* 6 */,
-/* 7 */
+/* 6 */
 /***/ function(module, exports) {
 
 	const Constants = {
@@ -402,14 +483,17 @@
 	    bright: "#0cc9c7",
 	    medium: "#369393",
 	    dim: "#2e4852"
-	  }
+	  },
+	
+	  PLAYER_STROKE: 6,
+	  MAX_RADIUS: 40
 	};
 	
 	module.exports = Constants;
 
 
 /***/ },
-/* 8 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	const Util = __webpack_require__(5);
@@ -421,7 +505,7 @@
 	    velocity = Util.randomVec(((Math.random() * 0.3) + 0.001));
 	  }
 	
-	  radius = radius || (Math.random() * 10) + 10;
+	  radius = radius || Util.randomRadius();
 	
 	  color = color || Util.randomColor();
 	
