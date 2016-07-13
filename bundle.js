@@ -60,6 +60,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	const Game = __webpack_require__(2);
+	const Player = __webpack_require__(3);
 	
 	function GameView(dimX, dimY) {
 	  this.dimX = dimX;
@@ -83,8 +84,7 @@
 	
 	  Object.keys(GameView.MOVES).forEach( k => {
 	    const move = GameView.MOVES[k];
-	    // key(k, () => { player.thrust(move); });
-	    key(k, () => { console.log(move); });
+	    key(k, () => { player.thrust(move); }); // vendor/keymaster.js
 	  });
 	};
 	
@@ -99,15 +99,15 @@
 	
 	  this.mapKeyHandlers();
 	
-	  requestAnimationFrame(this.cycle());
+	  requestAnimationFrame(this.cycle(ctx));
 	};
 	
-	GameView.prototype.cycle = function () {
+	GameView.prototype.cycle = function (ctx) {
 	  this.game.step();
-	  this.game.render();
+	  this.game.render(ctx);
 	  this.isGameOver();
 	
-	  requestAnimationFrame(this.animate.bind(this));
+	  requestAnimationFrame(this.animate.bind(this, ctx));
 	};
 	
 	GameView.prototype.isGameOver = function () {
@@ -119,22 +119,43 @@
 
 /***/ },
 /* 2 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
+	const Player = __webpack_require__(3);
+	
 	function Game (dimX, dimY) {
 	  this.dimX = dimX;
 	  this.dimY = dimY;
+	
+	  const playerPos = [(dimX / 2), (dimY / 2)];
+	  this.player = new Player(playerPos, this);
 	}
+	
+	Game.prototype.render = function (ctx) {
+	  ctx.clearRext(0, 0, this.dimX, this.dimY);
+	  
+	};
 	
 	Game.prototype.step = function () {
 	
 	};
 	
-	Game.prototype.render = function () {
+	module.exports = Game;
+
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	const Player = function () {
 	
 	};
 	
-	module.exports = Game;
+	Player.prototype.thrust = function (move) {
+	
+	};
+	
+	module.exports = Player;
 
 
 /***/ }
