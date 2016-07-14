@@ -59,7 +59,7 @@
 	
 	window.playing = false;
 	document.addEventListener("keydown", () => {
-	  if (!window.playing) {
+	  if (!window.playing && event.keyCode === 32) {
 	    clockEl.className = "clock";
 	    clockEl.innerHTML = "";
 	    endEl.className = "toplevel-wrapper hidden";
@@ -142,7 +142,7 @@
 	GameView.prototype.endingSequence = function () {
 	  this.endTimeEl.innerHTML = `Completed in ${this.time} seconds`;
 	  this.endEl.className = "toplevel-wrapper";
-	  this.clockEl.className = "hidden";
+	  this.clockEl.className = "clock hidden";
 	  window.playing = false;
 	};
 	
@@ -174,7 +174,7 @@
 	  }
 	
 	  const playerPos = [(dimX / 2), (dimY / 2)];
-	  this.player = new Player(playerPos, this);
+	  this.player = new Player(playerPos, this, this.invalidColors());
 	  this.shapes.player = [this.player];
 	}
 	
@@ -269,7 +269,7 @@
 	    }
 	  });
 	
-	  if (emptyColors.length < Object.keys(Constants.COLORS).length - 1) {
+	  if (emptyColors.length < Object.keys(Constants.COLORS).length - 1 && this.player) {
 	    emptyColors.push(this.player.color);
 	  }
 	
@@ -298,9 +298,9 @@
 	const RADIUS = 10;
 	const VELOCITY = [0, 0];
 	
-	const Player = function (pos, game) {
+	const Player = function (pos, game, invalidColors) {
 	  this.isPlayer = true;
-	  this.color = Util.randomColor();
+	  this.color = Util.randomColor(invalidColors);
 	  MovingShape.call(this, pos, VELOCITY, RADIUS, this.color, game);
 	};
 	
