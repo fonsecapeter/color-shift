@@ -8,10 +8,11 @@ html, body, canvas {
 
 .hidden {
 	display: hidden;
+  opacity: 0;
   transform: scale(0);
 }
 
-.start-wrapper {
+.toplevel-wrapper {
   padding-top: 40px;
   width: 100%;
   top: 0;
@@ -21,7 +22,7 @@ html, body, canvas {
   transition: all 1000ms ease-in-out;
 }
 
-.start {
+.ball {
   height: 400px;
   width: 400px;
   margin: auto;

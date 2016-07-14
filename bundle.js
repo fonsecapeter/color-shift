@@ -47,8 +47,10 @@
 	const GameView = __webpack_require__(1);
 	
 	const startEl = document.getElementById('new');
+	const endEl = document.getElementById('end');
 	const canvasEl = document.getElementById("main");
 	const clockEl = document.getElementById("clock");
+	const endTimeEl = document.getElementById("end-time");
 	
 	canvasEl.width = viewportSize.getWidth() - 5;
 	canvasEl.height = viewportSize.getHeight() - 4;
@@ -58,10 +60,13 @@
 	window.playing = false;
 	document.addEventListener("keydown", () => {
 	  if (!window.playing) {
+	    clockEl.className = "clock";
+	    clockEl.innerHTML = "";
+	    endEl.className = "toplevel-wrapper hidden";
 	    startEl.className += " hidden";
 	
 	    window.playing = true;
-	    const gameView = new GameView(canvasEl.width, canvasEl.height, clockEl).start(ctx);
+	    const gameView = new GameView(canvasEl.width, canvasEl.height, clockEl, endEl, endTimeEl).start(ctx);
 	  }
 	});
 
@@ -73,10 +78,12 @@
 	const Game = __webpack_require__(2);
 	const Player = __webpack_require__(3);
 	
-	function GameView(dimX, dimY, clockEl) {
+	function GameView(dimX, dimY, clockEl, endEl, endTimeEl) {
 	  this.dimX = dimX;
 	  this.dimY = dimY;
 	  this.clockEl = clockEl;
+	  this.endEl = endEl;
+	  this.endTimeEl = endTimeEl;
 	  this.playing = false;
 	}
 	
@@ -124,15 +131,19 @@
 	
 	  this.game.step();
 	  this.game.render(ctx);
-	  this.isGameOver();
 	
 	  if (this.game.isOver() === false ) {
 	    requestAnimationFrame(this.cycle.bind(this, ctx));
+	  } else {
+	    this.endingSequence();
 	  }
 	};
 	
-	GameView.prototype.isGameOver = function () {
-	  return false;
+	GameView.prototype.endingSequence = function () {
+	  this.endTimeEl.innerHTML = `Completed in ${this.time} seconds`;
+	  this.endEl.className = "toplevel-wrapper";
+	  this.clockEl.className = "hidden";
+	  window.playing = false;
 	};
 	
 	module.exports = GameView;
@@ -289,7 +300,7 @@
 	
 	const Player = function (pos, game) {
 	  this.isPlayer = true;
-	  this.color = Constants.COLORS.bright;
+	  this.color = Util.randomColor();
 	  MovingShape.call(this, pos, VELOCITY, RADIUS, this.color, game);
 	};
 	
