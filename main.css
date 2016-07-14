@@ -11,22 +11,25 @@ html, body, canvas {
 }
 
 .start-wrapper {
+  padding-top: 40px;
+  width: 100%;
+  top: 0;
+  left: 0;
   position: absolute;
   position: absolute;
   text-align: center;
-  top: 60px;
-  left: 60px;
+  transition: all 1000ms ease-in-out;
 }
 
 .start {
   height: 400px;
   width: 400px;
+  margin: auto;
   border-radius: 50%;
   background-color: #369393;
   color: #221f26;
   text-align: center;
   padding: 20px;
-  transition: all 1000ms ease-in-out;
 }
 
 .hidden {
