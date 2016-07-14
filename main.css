@@ -17,7 +17,6 @@ html, body, canvas {
   top: 0;
   left: 0;
   position: absolute;
-  position: absolute;
   text-align: center;
   transition: all 1000ms ease-in-out;
 }
@@ -31,6 +30,14 @@ html, body, canvas {
   color: #221f26;
   text-align: center;
   padding: 20px;
+}
+
+.clock {
+  font-family: 'Ubuntu Mono';
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 20px;
 }
 
 h1 {

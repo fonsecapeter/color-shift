@@ -48,6 +48,7 @@
 	
 	const startEl = document.getElementById('new');
 	const canvasEl = document.getElementById("main");
+	const clockEl = document.getElementById("clock");
 	
 	canvasEl.width = viewportSize.getWidth() - 5;
 	canvasEl.height = viewportSize.getHeight() - 4;
@@ -60,7 +61,7 @@
 	    startEl.className += " hidden";
 	
 	    window.playing = true;
-	    const gameView = new GameView(canvasEl.width, canvasEl.height).start(ctx);
+	    const gameView = new GameView(canvasEl.width, canvasEl.height, clockEl).start(ctx);
 	  }
 	});
 
@@ -72,9 +73,10 @@
 	const Game = __webpack_require__(2);
 	const Player = __webpack_require__(3);
 	
-	function GameView(dimX, dimY) {
+	function GameView(dimX, dimY, clockEl) {
 	  this.dimX = dimX;
 	  this.dimY = dimY;
+	  this.clockEl = clockEl;
 	  this.playing = false;
 	}
 	
@@ -99,6 +101,8 @@
 	};
 	
 	GameView.prototype.start = function (ctx) {
+	  this.time = 0;
+	  this.startTime = Date.now();
 	  this.game = new Game(this.dimX, this.dimY);
 	  this.player = this.game.player;
 	  this.playing = true;
@@ -113,6 +117,11 @@
 	};
 	
 	GameView.prototype.cycle = function (ctx) {
+	  this.time = Math.floor((Date.now() - this.startTime) / 1000);
+	  if (this.time > 0) {
+	    this.clockEl.innerHTML = `${this.time}`;
+	  }
+	
 	  this.game.step();
 	  this.game.render(ctx);
 	  this.isGameOver();
