@@ -138,7 +138,7 @@
 	const Util = __webpack_require__(5);
 	const Constants = __webpack_require__(6);
 	
-	const NUM_SHAPES = 60;
+	const NUM_SHAPES = 30;
 	
 	function Game (dimX, dimY) {
 	  this.dimX = dimX;
@@ -360,10 +360,43 @@
 	};
 	
 	MovingShape.prototype.bounceOther = function (other) {
-	  this.velocity[0] =  (this.velocity[0] * (this.radius - other.radius) + (other.radius * other.velocity[0])) / (2 * (this.radius + other.radius));
-	  this.velocity[1] = (this.velocity[1] * (this.radius - other.radius) + (other.radius * other.velocity[1])) / (2 * (this.radius + other.radius));
-	  // other.velocity[0] = (other.velocity[0] * (other.radius - this.radius) + (2 * this.radius * this.velocity[0])) / (2 * (other.radius + this.radius));
-	  // other.velocity[1] = (other.velocity[1] * (other.radius - this.radius) + (2 * this.radius * this.velocity[1])) / (2 * (other.radius + this.radius));
+	  let velocityDiff = [], dispDiff = [];
+	  velocityDiff[0] = this.velocity[0] - other.velocity[1];
+	  velocityDiff[1] = this.velocity[1] - other.velocity[1];
+	
+	  dispDiff[0] = this.pos[0] - other.pos[0];
+	  dispDiff[1] = this.pos[1] - other.pos[1];
+	
+	  // if both cirlces moving towards each other (avoid sticking)
+	  if (Util.dotProduct(velocityDiff, dispDiff) < 0) {
+	    const thisMass = Math.pow(this.radius, 3);
+	    const otherMass = Math.pow(other.radius, 3);
+	
+	    let newVelocity = [];
+	    newVelocity[0] =  (this.velocity[0] *
+	      (thisMass - otherMass) +
+	      (2 * otherMass * other.velocity[0])
+	    ) / (thisMass + otherMass);
+	    newVelocity[1] =  (this.velocity[1] *
+	      (thisMass - otherMass) +
+	      (2 * otherMass * other.velocity[1])
+	    ) / (thisMass + otherMass);
+	
+	    let newOtherVelocity = [];
+	    newOtherVelocity[0] = (other.velocity[0] *
+	      (otherMass - thisMass) +
+	      (2 * thisMass * this.velocity[0])
+	    ) / (otherMass + thisMass);
+	    newOtherVelocity[1] = (other.velocity[1] *
+	      (otherMass - thisMass) +
+	      (2 * thisMass * this.velocity[1])
+	    ) / (otherMass + thisMass);
+	
+	    this.velocity[0] = newVelocity[0] * 0.95;
+	    this.velocity[1] = newVelocity[1] * 0.95;
+	    other.velocity[0] = newOtherVelocity[0] * 0.95;
+	    other.velocity[1] = newOtherVelocity[1] * 0.95;
+	  }
 	};
 	
 	// at canvas boundries
@@ -487,6 +520,15 @@
 	
 	  randomRadius () {
 	    return Math.floor((Math.random() * (Constants.MAX_RADIUS - 6 + 1)) + 6);
+	  },
+	
+	  dotProduct (arr1, arr2) {
+	    // assumes arr1.length === arr2.length
+	    let dotProd = 0;
+	    for (let i = 0; i < arr1.length; i++) {
+	      dotProd += (arr1[i] * arr2[i]);
+	    }
+	    return dotProd;
 	  }
 	};
 	

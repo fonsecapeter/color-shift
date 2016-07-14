@@ -8,6 +8,7 @@ html, body, canvas {
 
 .hidden {
 	display: hidden;
+  transform: scale(0);
 }
 
 .start-wrapper {
@@ -30,10 +31,6 @@ html, body, canvas {
   color: #221f26;
   text-align: center;
   padding: 20px;
-}
-
-.hidden {
-  transform: scale(0);
 }
 
 h1 {
