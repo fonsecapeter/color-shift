@@ -458,7 +458,7 @@
 	
 	  const self = this;
 	  if (sumRadii > totDistance) {
-	    if (other.color !== this.color) {
+	    if ((this.isPlayer && other.color !== this.color) || (!this.isPlayer && !other.isPlayer)) {
 	      self.bounceOther(other);
 	    }
 	    return true;
