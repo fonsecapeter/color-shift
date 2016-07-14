@@ -2,5 +2,43 @@ html, body, canvas {
   margin: 0;
   padding: 0;
   background-color: #221f26;
+  font-family: Dosis;
   color: #575758;
+}
+
+.hidden {
+	display: hidden;
+}
+
+.start-wrapper {
+  position: absolute;
+  position: absolute;
+  text-align: center;
+  top: 60px;
+  left: 60px;
+}
+
+.start {
+  height: 400px;
+  width: 400px;
+  border-radius: 50%;
+  background-color: #369393;
+  color: #221f26;
+  text-align: center;
+  padding: 20px;
+  transition: all 1000ms ease-in-out;
+}
+
+.hidden {
+  transform: scale(0);
+}
+
+h1 {
+  display: block;
+  padding-top: 100px;
+}
+
+p {
+  display: block;
+  margin: 6px 20px;
 }

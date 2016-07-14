@@ -46,16 +46,23 @@
 
 	const GameView = __webpack_require__(1);
 	
+	const startEl = document.getElementById('new');
 	const canvasEl = document.getElementById("main");
-	
-	// canvasEl.width = window.innerWidth;
-	// canvasEl.height = window.innerHeight;
 	
 	canvasEl.width = viewportSize.getWidth() - 5;
 	canvasEl.height = viewportSize.getHeight() - 4;
 	
 	const ctx = canvasEl.getContext('2d');
-	const gameView = new GameView(canvasEl.width, canvasEl.height).start(ctx);
+	
+	window.playing = false;
+	document.addEventListener("keydown", () => {
+	  if (!window.playing) {
+	    startEl.className += " hidden";
+	
+	    window.playing = true;
+	    const gameView = new GameView(canvasEl.width, canvasEl.height).start(ctx);
+	  }
+	});
 
 
 /***/ },
@@ -208,7 +215,6 @@
 	
 	Game.prototype.isOver = function () {
 	  // Object.keys(this.shapes).forEach ( color => {
-	  console.log(this.shapes);
 	  for (let i = 0; i < Object.keys(this.shapes).length; i ++) {
 	    const color = Object.keys(this.shapes)[i];
 	    if (this.shapes[color].length > 0 && color !== "player") {
