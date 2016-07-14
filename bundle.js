@@ -138,7 +138,7 @@
 	const Util = __webpack_require__(5);
 	const Constants = __webpack_require__(6);
 	
-	const NUM_SHAPES = 4;
+	const NUM_SHAPES = 60;
 	
 	function Game (dimX, dimY) {
 	  this.dimX = dimX;
@@ -269,7 +269,7 @@
 	const Util = __webpack_require__(5);
 	const Constants = __webpack_require__(6);
 	
-	const RADIUS = 16;
+	const RADIUS = 10;
 	const VELOCITY = [0, 0];
 	
 	const Player = function (pos, game) {
