@@ -179,6 +179,12 @@
 	    if (shape.isCollidedWith(this.player)) {
 	      shape.collidedWithPlayer();
 	    }
+	
+	    this.forEachShape ( otherShape => {
+	      if (otherShape !== this) {
+	        shape.isCollidedWith(otherShape);
+	      }
+	    });
 	  });
 	};
 	
@@ -353,6 +359,13 @@
 	  ];
 	};
 	
+	MovingShape.prototype.bounceOther = function (other) {
+	  this.velocity[0] =  (this.velocity[0] * (this.radius - other.radius) + (other.radius * other.velocity[0])) / (2 * (this.radius + other.radius));
+	  this.velocity[1] = (this.velocity[1] * (this.radius - other.radius) + (other.radius * other.velocity[1])) / (2 * (this.radius + other.radius));
+	  // other.velocity[0] = (other.velocity[0] * (other.radius - this.radius) + (2 * this.radius * this.velocity[0])) / (2 * (other.radius + this.radius));
+	  // other.velocity[1] = (other.velocity[1] * (other.radius - this.radius) + (2 * this.radius * this.velocity[1])) / (2 * (other.radius + this.radius));
+	};
+	
 	// at canvas boundries
 	MovingShape.prototype.ensureBounce = function (pos) {
 	  const bounce = this.outOfBounds(pos) || { axis: null, negative: false };
@@ -410,7 +423,11 @@
 	  const yDistance = Math.pow((this.pos[1] - other.pos[1]), 2);
 	  const totDistance = Math.sqrt((xDistance + yDistance));
 	
+	  const self = this;
 	  if (sumRadii > totDistance) {
+	    if (other.color !== this.color) {
+	      self.bounceOther(other);
+	    }
 	    return true;
 	  } else {
 	    return false;
