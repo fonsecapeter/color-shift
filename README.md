@@ -1,5 +1,6 @@
 # Color Shift
-[live](peterfonseca.gq/color-shift)
+### [live](peterfonseca.gq/color-shift)
+
 ![screenshot][screenshot]
 
 Color shift is a vanilla JavaScript canvas game where the player must absorb shapes of the same color (changing colors on each absorption). It is built around a custom 2d physics engine that supports simultaneous inelastic collision simulation. The player is subject to drag so that it's velocity doesn't get too crazy, but the other shapes face no resistance to preserve some of the energy in the universe.
