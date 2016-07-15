@@ -587,7 +587,7 @@
 	
 	const Shape = function (pos, game, radius, velocity, color) {
 	  if (!velocity) {
-	    velocity = Util.randomVec(((Math.random() * 0.3) + 0.001));
+	    velocity = Util.randomVec(((Math.random() * 0.6) + 0.001));
 	  }
 	
 	  radius = radius || Util.randomRadius();
