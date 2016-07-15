@@ -1,5 +1,5 @@
 # Color Shift
-### [live](peterfonseca.gq/color-shift)
+### [live](http://peterfonseca.gq/color-shift)
 
 ![screenshot][screenshot]
 
