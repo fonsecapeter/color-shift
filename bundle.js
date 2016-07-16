@@ -180,8 +180,8 @@
 	
 	Game.prototype.step = function () {
 	  this.isOver();
-	  this.moveShapes();
 	  this.checkCollisions();
+	  this.moveShapes();
 	};
 	
 	Game.prototype.render = function (ctx) {
@@ -196,12 +196,12 @@
 	
 	Game.prototype.checkCollisions = function () {
 	  this.forEachShape ( shape => {
-	    if (shape.isCollidedWith(this.player)) {
+	    if (shape.isCollidedWith(this.player) && shape !== this.player) {
 	      shape.collidedWithPlayer();
 	    }
 	
 	    this.forEachShape ( otherShape => {
-	      if (otherShape !== this) {
+	      if (otherShape !== shape) {
 	        shape.isCollidedWith(otherShape);
 	      }
 	    });
@@ -348,7 +348,6 @@
 	  } else {
 	    ctx.fill();
 	  }
-	
 	};
 	
 	MovingShape.prototype.move = function () {
@@ -476,10 +475,9 @@
 	  const yDistance = Math.pow((this.pos[1] - other.pos[1]), 2);
 	  const totDistance = Math.sqrt((xDistance + yDistance));
 	
-	  const self = this;
-	  if (sumRadii > totDistance) {
+	  if (sumRadii >= totDistance) {
 	    if ((this.isPlayer && other.color !== this.color) || (!this.isPlayer && !other.isPlayer)) {
-	      self.bounceOther(other);
+	      this.bounceOther(other);
 	    }
 	    return true;
 	  } else {

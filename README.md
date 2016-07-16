@@ -3,26 +3,8 @@
 
 ![screenshot][screenshot]
 
-Color shift is a vanilla JavaScript canvas game where the player must absorb shapes of the same color (changing colors on each absorption). It is built around a custom 2d physics engine that supports simultaneous inelastic collision simulation. The player is subject to drag so that it's velocity doesn't get too crazy, but the other shapes face no resistance to preserve some of the energy in the universe.
+Color shift is a vanilla JavaScript canvas game where the player must absorb shapes of the same color (changing colors on each absorption). It is built around a custom 2d physics engine that supports collision simulation. The player is subject to drag so that it's velocity doesn't get too crazy, but the other shapes face no resistance to preserve some of the energy in the universe.
 
-```javascript
-// if both circles are moving towards each other (avoids sticking)
-if (Util.dotProduct(velocityDiff, dispDiff) < 0) {
-  const thisMass = Math.pow(this.radius, 3);
-  const otherMass = Math.pow(other.radius, 3);
-
-  let newReflectiveForce = [];
-  newReflectiveForce[0] = (
-    (thisMass - otherMass) +
-    (2 * otherMass * other.velocity[0])
-  ) / (thisMass + otherMass);
-
-  ...
-
-  this.reflectiveForce[0] *= (newReflectiveForce[0]) * inelasticLoss;
-
-  ...
-```
 > Task switching, or set-shifting, is an executive function and a kind of cognitive flexibility that involves the ability to shift attention between one task and another. This ability allows a person to rapidly and efficiently adapt to different situations.
 -wikipedia
 
