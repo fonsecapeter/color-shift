@@ -196,6 +196,9 @@
 	
 	Game.prototype.checkCollisions = function () {
 	  this.forEachShape ( shape => {
+	    shape.alreadyCollided = [];
+	  });
+	  this.forEachShape ( shape => {
 	    if (shape.isCollidedWith(this.player) && shape !== this.player) {
 	      shape.collidedWithPlayer();
 	    }
@@ -209,6 +212,10 @@
 	};
 	
 	Game.prototype.moveShapes = function () {
+	  this.forEachShape(shape => {
+	    shape.adjustForces();
+	  });
+	
 	  this.forEachShape(shape => {
 	    shape.move();
 	  });
@@ -307,8 +314,8 @@
 	Util.inherits(Player, MovingShape);
 	
 	Player.prototype.thrust = function (impulse) {
-	  this.velocity[0] += impulse[0];
-	  this.velocity[1] += impulse[1];
+	  this.impulse[0] += impulse[0];
+	  this.impulse[1] += impulse[1];
 	};
 	
 	module.exports = Player;
@@ -327,6 +334,12 @@
 	  this.radius = radius;
 	  this.color = color;
 	  this.game = game;
+	
+	  this.mass = Math.pow(this.radius, 3);
+	  this.reflectiveForce = [0, 0];
+	  this.alreadyCollided = [];
+	  this.impulse = [0, 0];
+	  this.boundingForce = [1, 1];
 	}
 	
 	MovingShape.prototype.render = function (ctx) {
@@ -378,7 +391,26 @@
 	  ];
 	};
 	
+	MovingShape.prototype.adjustForces = function () {
+	  if (this.reflectiveForce[0] === 0) {
+	    this.reflectiveForce[0] = this.velocity[0];
+	  }
+	  if (this.reflectiveForce[1] === 0) {
+	    this.reflectiveForce[1] = this.velocity[1];
+	  }
+	  this.velocity[0] = (this.reflectiveForce[0] + this.impulse[0]) * this.boundingForce[0];
+	  this.velocity[1] = (this.reflectiveForce[1] + this.impulse[1]) * this.boundingForce[1];
+	  if (this.pos[0] < 0) {
+	    console.log(this.boundingForce[0]);
+	  }
+	
+	  this.reflectiveForce = [0, 0];
+	  this.impulse = [0, 0];
+	  this.boundingForce = [1, 1];
+	};
+	
 	MovingShape.prototype.bounceOther = function (other) {
+	  const inelasticLoss = 0.9;
 	  let velocityDiff = [], dispDiff = [];
 	  velocityDiff[0] = this.velocity[0] - other.velocity[1];
 	  velocityDiff[1] = this.velocity[1] - other.velocity[1];
@@ -387,34 +419,37 @@
 	  dispDiff[1] = this.pos[1] - other.pos[1];
 	
 	  // if both cirlces moving towards each other (avoid sticking)
-	  if (Util.dotProduct(velocityDiff, dispDiff) < 0) {
-	    const thisMass = Math.pow(this.radius, 3);
-	    const otherMass = Math.pow(other.radius, 3);
+	  if (Util.dotProduct(velocityDiff, dispDiff) < 0 && this.alreadyCollided.indexOf(other) === -1 && other.alreadyCollided.indexOf(this) === -1) {
+	    this.alreadyCollided.push(other);
+	    other.alreadyCollided.push(this);
 	
-	    let newVelocity = [];
-	    newVelocity[0] =  (this.velocity[0] *
-	      (thisMass - otherMass) +
-	      (2 * otherMass * other.velocity[0])
-	    ) / (thisMass + otherMass);
-	    newVelocity[1] =  (this.velocity[1] *
-	      (thisMass - otherMass) +
-	      (2 * otherMass * other.velocity[1])
-	    ) / (thisMass + otherMass);
+	    //const this.mass = Math.pow(this.radius, 3);
+	    //const other.mass = Math.pow(other.radius, 3);
 	
-	    let newOtherVelocity = [];
-	    newOtherVelocity[0] = (other.velocity[0] *
-	      (otherMass - thisMass) +
-	      (2 * thisMass * this.velocity[0])
-	    ) / (otherMass + thisMass);
-	    newOtherVelocity[1] = (other.velocity[1] *
-	      (otherMass - thisMass) +
-	      (2 * thisMass * this.velocity[1])
-	    ) / (otherMass + thisMass);
+	    let newReflectiveForce = [];
+	    newReflectiveForce[0] = ( this.velocity[0] *
+	      (this.mass - other.mass) +
+	      (2 * other.mass * other.velocity[0])
+	    ) / (this.mass + other.mass);
+	    newReflectiveForce[1] = ( this.velocity[1] *
+	      (this.mass - other.mass) +
+	      (2 * other.mass * other.velocity[1])
+	    ) / (this.mass + other.mass);
 	
-	    this.velocity[0] = newVelocity[0] * 0.95;
-	    this.velocity[1] = newVelocity[1] * 0.95;
-	    other.velocity[0] = newOtherVelocity[0] * 0.95;
-	    other.velocity[1] = newOtherVelocity[1] * 0.95;
+	    let newOtherReflectiveForce = [];
+	    newOtherReflectiveForce[0] = ( other.velocity[0] *
+	      (other.mass - this.mass) +
+	      (2 * this.mass * this.velocity[0])
+	    ) / (other.mass + this.mass);
+	    newOtherReflectiveForce[1] = ( other.velocity[1] *
+	      (other.mass - this.mass) +
+	      (2 * this.mass * this.velocity[1])
+	    ) / (other.mass + this.mass);
+	
+	    this.reflectiveForce[0] += (newReflectiveForce[0]) * inelasticLoss;
+	    this.reflectiveForce[1] += (newReflectiveForce[1]) * inelasticLoss;
+	    other.reflectiveForce[0] += (newOtherReflectiveForce[0]) * inelasticLoss;
+	    other.reflectiveForce[1] += (newOtherReflectiveForce[1]) * inelasticLoss;
 	  }
 	};
 	
@@ -422,22 +457,21 @@
 	MovingShape.prototype.ensureBounce = function (pos) {
 	  const bounce = this.outOfBounds(pos) || { axis: null, negative: false };
 	
-	  let damping = -1;
-	  if (this.isPlayer) {
-	    damping = -0.9;
-	  }
+	  let reflection = -1;
 	
 	  if (bounce.axis === 'x') {
 	    if (bounce.negative) { // moving left
-	      if (this.velocity[0] < 0) { this.velocity[0] *= damping; }
+	      if (this.velocity[0] < 0) {
+	        this.boundingForce[0] = reflection;
+	      }
 	    } else {                         // moving right
-	      if (this.velocity[0] > 0) { this.velocity[0] *= damping; }
+	      if (this.velocity[0] > 0) { this.boundingForce[0] = reflection; }
 	    }
 	  } else if (bounce.axis === 'y') {
 	    if (bounce.negative) { // moving up
-	      if (this.velocity[1] < 0) { this.velocity[1] *= damping; }
+	      if (this.velocity[1] < 0) { this.boundingForce[1] = reflection; }
 	    } else {                         // moving down
-	      if (this.velocity[1] > 0) { this.velocity[1] *= damping; }
+	      if (this.velocity[1] > 0) { this.boundingForce[1] = reflection; }
 	    }
 	  }
 	};
@@ -457,8 +491,11 @@
 	
 	MovingShape.prototype.collidedWithPlayer = function () {
 	  if (this.color === this.game.player.color && !this.isPlayer) {
+	    // shrink the circle
 	    this.radius -= 1;
+	    this.mass = Math.pow(this.radius, 3);
 	
+	    // also pull the circle toward the center of the player
 	    let pullx;
 	    if (this.game.player.pos[0] < this.pos[0]) {
 	      pullx = -0.7;
@@ -473,12 +510,13 @@
 	      pully = 0.7;
 	    }
 	
-	    this.pos[0] += pullx;
-	    this.pos[1] += pully;
+	    this.reflectiveForce[0] += pullx;
+	    this.reflectiveForce[1] += pully;
 	
 	    if (this.radius <= 1) {
 	      this.game.removeShape(this);
 	
+	      // only pick from colors represented in game
 	      let invalidColors = this.game.invalidColors();
 	      (invalidColors.length >= Object.keys(Constants.COLORS).length) ? invalidColors = [] : invalidColors = invalidColors;
 	      this.game.player.color = Util.randomColor(invalidColors);
@@ -493,6 +531,7 @@
 	  const totDistance = Math.sqrt((xDistance + yDistance));
 	
 	  if (sumRadii >= totDistance) {
+	    // don't bounce if collision is between player and shape of same color
 	    if ((this.isPlayer && other.color !== this.color) || (!this.isPlayer && !other.isPlayer)) {
 	      this.bounceOther(other);
 	    }
