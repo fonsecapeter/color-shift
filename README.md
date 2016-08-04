@@ -17,9 +17,11 @@ if (Util.dotProduct(velocityDiff, dispDiff) < 0) {
     (2 * other.mass * other.velocity[0])
   ) / (this.mass + other.mass);
 
- ...
+ // ...
 
  this.reflectiveForce[0] += (newReflectiveForce[0]) * inelasticLoss;
+
+ // ...
 }
 ```
 
