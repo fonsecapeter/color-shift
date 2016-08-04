@@ -424,9 +424,6 @@
 	      this.alreadyCollided.push(other);
 	      other.alreadyCollided.push(this);
 	
-	      //const this.mass = Math.pow(this.radius, 3);
-	      //const other.mass = Math.pow(other.radius, 3);
-	
 	      let newReflectiveForce = [];
 	      newReflectiveForce[0] = ( this.velocity[0] *
 	        (this.mass - other.mass) +
