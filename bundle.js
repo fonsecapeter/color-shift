@@ -491,10 +491,6 @@
 	  let reflection = -1;
 	  let nudge = [0, 0];
 	
-	  if (this === this.game.player) {
-	    console.log(bounce);
-	  }
-	
 	  if (bounce.x) {
 	    if (bounce.xnegative) { // moving left
 	      if (this.velocity[0] < 0) { this.boundingForce[0] = reflection; }
