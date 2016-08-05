@@ -74,7 +74,7 @@
 	  }
 	});
 	// no gameplay on mobile, but can at least watch the circles bounce...
-	document.addEventListener("mousedown", () => {
+	document.addEventListener("click", () => {
 	  if (!window.playing) {
 	    startGame();
 	  }
