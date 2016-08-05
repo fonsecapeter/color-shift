@@ -57,16 +57,25 @@
 	
 	const ctx = canvasEl.getContext('2d');
 	
+	function startGame () {
+	  clockEl.className = "clock";
+	  clockEl.innerHTML = "";
+	  endEl.className = "toplevel-wrapper hidden";
+	  startEl.className += " hidden";
+	
+	  window.playing = true;
+	  const gameView = new GameView(canvasEl.width, canvasEl.height, clockEl, endEl, endTimeEl).start(ctx);
+	}
+	
 	window.playing = false;
 	document.addEventListener("keydown", () => {
 	  if (!window.playing && event.keyCode === 32) {
-	    clockEl.className = "clock";
-	    clockEl.innerHTML = "";
-	    endEl.className = "toplevel-wrapper hidden";
-	    startEl.className += " hidden";
-	
-	    window.playing = true;
-	    const gameView = new GameView(canvasEl.width, canvasEl.height, clockEl, endEl, endTimeEl).start(ctx);
+	    startGame();
+	  }
+	});
+	document.addEventListener("click", () => {
+	  if (!window.playing) {
+	    startGame();
 	  }
 	});
 
