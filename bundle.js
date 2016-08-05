@@ -73,7 +73,8 @@
 	    startGame();
 	  }
 	});
-	document.addEventListener("click", () => {
+	// no gameplay on mobile, but can at least watch the circles bounce...
+	document.addEventListener("touchend", () => {
 	  if (!window.playing) {
 	    startGame();
 	  }
