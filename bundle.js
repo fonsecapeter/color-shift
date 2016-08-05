@@ -95,7 +95,12 @@
 	  's':     [ 0,   0.2],
 	  'down':  [ 0,   0.2],
 	  'd':     [ 0.2, 0],
-	  'right': [ 0.2, 0]
+	  'right': [ 0.2, 0],
+	
+	  'up+left':    [-0.2, -0.2],
+	  'up+right':   [ 0.2, -0.2],
+	  'down+left':  [-0.2,  0.2],
+	  'down+right': [ 0.2,  0.2]
 	};
 	
 	GameView.prototype.mapKeyHandlers = function () {
@@ -664,7 +669,7 @@
 	const Constants = {
 	  COLORS: {
 	    bright: "#0cc9c7",
-	    medium: "#369393",
+	    medium: "#308282",
 	    dim: "#2e4852"
 	  },
 	
