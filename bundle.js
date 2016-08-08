@@ -76,19 +76,21 @@
 	});
 	
 	// start without prompt on iphone
-	var standalone = window.navigator.standalone,
+	let standalone = window.navigator.standalone,
 	    userAgent = window.navigator.userAgent.toLowerCase(),
 	    safari = /safari/.test( userAgent ),
 	    ios = /iphone|ipod|ipad/.test( userAgent );
 	
 	if (!window.playing && ios) {
-	  clockEl.className = "clock";
-	  clockEl.innerHTML = "";
-	  endEl.className = "toplevel-wrapper hidden";
-	  startEl.className += " hidden";
+	  setTimeout( () => {
+	    clockEl.className = "clock";
+	    clockEl.innerHTML = "";
+	    endEl.className = "toplevel-wrapper hidden";
+	    startEl.className += " hidden";
 	
-	  window.playing = true;
-	  const gameView = new GameView(canvasEl.width, canvasEl.height, clockEl, endEl, endTimeEl).start(ctx);
+	    window.playing = true;
+	    const gameView = new GameView(canvasEl.width, canvasEl.height, clockEl, endEl, endTimeEl).start(ctx);
+	  }, 5000);
 	}
 
 
