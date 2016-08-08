@@ -72,7 +72,11 @@
 	  if (!window.playing && event.keyCode === 32) {
 	    startGame();
 	  }
+	
 	});
+	if (!window.playing && navigator.userAgent.match(/iPhone/i)) {
+	  startGame();
+	}
 
 
 /***/ },
