@@ -70,11 +70,20 @@
 	window.playing = false;
 	document.addEventListener("keydown", () => {
 	  if (!window.playing && event.keyCode === 32) {
+	    alert("mobile safari not detected");
 	    startGame();
 	  }
 	
 	});
-	if (!window.playing && navigator.userAgent.match(/iPhone/i)) {
+	
+	// start without prompt on iphone
+	let standalone = window.navigator.standalone;
+	let userAgent = window.navigator.userAgent.toLowerCase();
+	let safari = /safari/.test(userAgent);
+	let ios = /iphone|ipod|ipad/.test(userAgent);
+	
+	if (!window.playing && !standalone && safari) {
+	  alert("mobile safari detected");
 	  startGame();
 	}
 
