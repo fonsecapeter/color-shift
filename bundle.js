@@ -132,8 +132,8 @@
 	  var player = this.player;
 	
 	  this.canvasEl.addEventListener("touchstart", function (e) {
-	    var xPos = e.targetTouches.clientX;
-	    var yPos = e.targetTouches.clientY;
+	    var xPos = e.targetTouches[0].clientX;
+	    var yPos = e.targetTouches[0].clientY;
 	
 	    if (xPos > player.pos[0] + 12) {
 	      player.thrust(GameView.MOVES['right']);
