@@ -75,23 +75,12 @@
 	    startGame();
 	  }
 	});
+	
 	startEl.addEventListener("touchend", function () {
 	  if (!window.playing) {
 	    startGame();
 	  }
 	}, false);
-	
-	// start without prompt on iphone
-	// let standalone = window.navigator.standalone,
-	//     userAgent = window.navigator.userAgent.toLowerCase(),
-	//     safari = /safari/.test( userAgent ),
-	//     ios = /iphone|ipod|ipad/.test( userAgent );
-	
-	// if (!window.playing && ios) {
-	//   window.setTimeout( () => {
-	//     startGame();
-	//   }, 2000);
-	// }
 
 /***/ },
 /* 1 */
@@ -138,6 +127,29 @@
 	  });
 	};
 	
+	GameView.prototype.mapTouchHandlers = function () {
+	  var _this = this;
+	
+	  var player = this.player;
+	
+	  document.addEventListener("touchstart", function (event) {
+	    var xPos = event.originalEvent.touches[0].pageX;
+	    var yPos = event.originalEvent.touches[0].pageY;
+	
+	    if (xPos > _this.dimX / 2) {
+	      player.thrust(GameView.moves('up'));
+	    } else {
+	      player.thrust(GameView.moves('down'));
+	    }
+	
+	    if (yPos > _this.dimY / 2) {
+	      player.thrust(GameView.moves('right'));
+	    } else {
+	      player.thrust(GameView.moves('left'));
+	    }
+	  }, false);
+	};
+	
 	GameView.prototype.start = function (ctx) {
 	  this.time = 0;
 	  this.startTime = Date.now();
@@ -150,6 +162,7 @@
 	  }
 	
 	  this.mapKeyHandlers();
+	  this.mapTouchHandlers();
 	
 	  requestAnimationFrame(this.cycle.bind(this, ctx));
 	};
