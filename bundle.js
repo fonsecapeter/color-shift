@@ -82,7 +82,7 @@
 	let safari = /safari/.test(userAgent);
 	let ios = /iphone|ipod|ipad/.test(userAgent);
 	
-	if (!window.playing && !standalone && safari) {
+	if (!window.playing && ios) {
 	  alert("mobile safari detected");
 	  startGame();
 	}
