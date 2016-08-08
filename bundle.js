@@ -75,11 +75,11 @@
 	    startGame();
 	  }
 	});
-	document.addEventListener("click", function () {
+	startEl.addEventListener("touchend", function () {
 	  if (!window.playing) {
 	    startGame();
 	  }
-	});
+	}, false);
 	
 	// start without prompt on iphone
 	// let standalone = window.navigator.standalone,
