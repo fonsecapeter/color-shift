@@ -76,7 +76,7 @@
 	});
 	
 	// start without prompt on iphone
-	let standalone = window.navigator.standalone,
+	var standalone = window.navigator.standalone,
 	    userAgent = window.navigator.userAgent.toLowerCase(),
 	    safari = /safari/.test( userAgent ),
 	    ios = /iphone|ipod|ipad/.test( userAgent );
