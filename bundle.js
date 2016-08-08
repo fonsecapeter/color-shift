@@ -66,7 +66,7 @@
 	  startEl.className += " hidden";
 	
 	  window.playing = true;
-	  var gameView = new GameView(canvasEl.width, canvasEl.height, clockEl, endEl, endTimeEl).start(ctx);
+	  var gameView = new GameView(canvasEl, clockEl, endEl, endTimeEl).start(ctx);
 	}
 	
 	window.playing = false;
@@ -91,9 +91,10 @@
 	var Game = __webpack_require__(2);
 	var Player = __webpack_require__(3);
 	
-	function GameView(dimX, dimY, clockEl, endEl, endTimeEl) {
-	  this.dimX = dimX;
-	  this.dimY = dimY;
+	function GameView(canvasEl, clockEl, endEl, endTimeEl) {
+	  this.canvasEl = canvasEl;
+	  this.dimX = canvasEl.width;
+	  this.dimY = canvasEl.height;
 	  this.clockEl = clockEl;
 	  this.endEl = endEl;
 	  this.endTimeEl = endTimeEl;
@@ -132,7 +133,7 @@
 	
 	  var player = this.player;
 	
-	  document.addEventListener("touchstart", function (event) {
+	  this.canvasEl.addEventListener("touchstart", function (event) {
 	    var xPos = event.originalEvent.touches[0].pageX;
 	    var yPos = event.originalEvent.touches[0].pageY;
 	
