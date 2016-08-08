@@ -75,24 +75,23 @@
 	    startGame();
 	  }
 	});
+	document.addEventListener("touch", function () {
+	  if (!window.playing) {
+	    startGame();
+	  }
+	});
 	
 	// start without prompt on iphone
-	var standalone = window.navigator.standalone,
-	    userAgent = window.navigator.userAgent.toLowerCase(),
-	    safari = /safari/.test(userAgent),
-	    ios = /iphone|ipod|ipad/.test(userAgent);
+	// let standalone = window.navigator.standalone,
+	//     userAgent = window.navigator.userAgent.toLowerCase(),
+	//     safari = /safari/.test( userAgent ),
+	//     ios = /iphone|ipod|ipad/.test( userAgent );
 	
-	if (!window.playing && ios) {
-	  setTimeout(function () {
-	    clockEl.className = "clock";
-	    clockEl.innerHTML = "";
-	    endEl.className = "toplevel-wrapper hidden";
-	    startEl.className += " hidden";
-	
-	    window.playing = true;
-	    var gameView = new GameView(canvasEl.width, canvasEl.height, clockEl, endEl, endTimeEl).start(ctx);
-	  }, 5000);
-	}
+	// if (!window.playing && ios) {
+	//   window.setTimeout( () => {
+	//     startGame();
+	//   }, 2000);
+	// }
 
 /***/ },
 /* 1 */
