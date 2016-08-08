@@ -129,24 +129,22 @@
 	};
 	
 	GameView.prototype.mapTouchHandlers = function () {
-	  var _this = this;
-	
 	  var player = this.player;
 	
-	  this.canvasEl.addEventListener("touchstart", function (event) {
-	    var xPos = event.originalEvent.touches[0].pageX;
-	    var yPos = event.originalEvent.touches[0].pageY;
+	  this.canvasEl.addEventListener("touchstart", function (e) {
+	    var xPos = e.targetTouches.clientX;
+	    var yPos = e.targetTouches.clientY;
 	
-	    if (xPos > _this.dimX / 2) {
-	      player.thrust(GameView.moves('up'));
-	    } else {
-	      player.thrust(GameView.moves('down'));
+	    if (xPos > player.pos[0] + 12) {
+	      player.thrust(GameView.MOVES['right']);
+	    } else if (xPos < player.pos[0] - 12) {
+	      player.thrust(GameView.MOVES['left']);
 	    }
 	
-	    if (yPos > _this.dimY / 2) {
-	      player.thrust(GameView.moves('right'));
-	    } else {
-	      player.thrust(GameView.moves('left'));
+	    if (yPos > player.pos[1] + 12) {
+	      player.thrust(GameView.MOVES['down']);
+	    } else if (yPos < player.pos[1] - 12) {
+	      player.thrust(GameView.MOVES['up']);
 	    }
 	  }, false);
 	};
