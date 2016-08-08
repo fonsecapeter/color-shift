@@ -128,10 +128,11 @@
 	  });
 	};
 	
+	// for mobile
 	GameView.prototype.mapTouchHandlers = function () {
 	  var player = this.player;
 	
-	  this.canvasEl.addEventListener("touchstart", function (e) {
+	  this.canvasEl.addEventListener("touchmove", function (e) {
 	    var xPos = e.targetTouches[0].clientX;
 	    var yPos = e.targetTouches[0].clientY;
 	
