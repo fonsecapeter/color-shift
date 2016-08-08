@@ -75,7 +75,7 @@
 	    startGame();
 	  }
 	});
-	document.addEventListener("touch", function () {
+	document.addEventListener("click", function () {
 	  if (!window.playing) {
 	    startGame();
 	  }
