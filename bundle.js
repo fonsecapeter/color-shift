@@ -44,62 +44,64 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	const GameView = __webpack_require__(1);
+	'use strict';
 	
-	const startEl = document.getElementById('new');
-	const endEl = document.getElementById('end');
-	const canvasEl = document.getElementById("main");
-	const clockEl = document.getElementById("clock");
-	const endTimeEl = document.getElementById("end-time");
+	var GameView = __webpack_require__(1);
+	
+	var startEl = document.getElementById('new');
+	var endEl = document.getElementById('end');
+	var canvasEl = document.getElementById("main");
+	var clockEl = document.getElementById("clock");
+	var endTimeEl = document.getElementById("end-time");
 	
 	canvasEl.width = viewportSize.getWidth() - 5;
 	canvasEl.height = viewportSize.getHeight() - 4;
 	
-	const ctx = canvasEl.getContext('2d');
+	var ctx = canvasEl.getContext('2d');
 	
-	function startGame () {
+	function startGame() {
 	  clockEl.className = "clock";
 	  clockEl.innerHTML = "";
 	  endEl.className = "toplevel-wrapper hidden";
 	  startEl.className += " hidden";
 	
 	  window.playing = true;
-	  const gameView = new GameView(canvasEl.width, canvasEl.height, clockEl, endEl, endTimeEl).start(ctx);
+	  var gameView = new GameView(canvasEl.width, canvasEl.height, clockEl, endEl, endTimeEl).start(ctx);
 	}
 	
 	window.playing = false;
-	document.addEventListener("keydown", () => {
+	document.addEventListener("keydown", function () {
 	  if (!window.playing && event.keyCode === 32) {
 	    startGame();
 	  }
-	
 	});
 	
 	// start without prompt on iphone
 	var standalone = window.navigator.standalone,
 	    userAgent = window.navigator.userAgent.toLowerCase(),
-	    safari = /safari/.test( userAgent ),
-	    ios = /iphone|ipod|ipad/.test( userAgent );
+	    safari = /safari/.test(userAgent),
+	    ios = /iphone|ipod|ipad/.test(userAgent);
 	
 	if (!window.playing && ios) {
-	  setTimeout( () => {
+	  setTimeout(function () {
 	    clockEl.className = "clock";
 	    clockEl.innerHTML = "";
 	    endEl.className = "toplevel-wrapper hidden";
 	    startEl.className += " hidden";
 	
 	    window.playing = true;
-	    const gameView = new GameView(canvasEl.width, canvasEl.height, clockEl, endEl, endTimeEl).start(ctx);
+	    var gameView = new GameView(canvasEl.width, canvasEl.height, clockEl, endEl, endTimeEl).start(ctx);
 	  }, 5000);
 	}
-
 
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	const Game = __webpack_require__(2);
-	const Player = __webpack_require__(3);
+	'use strict';
+	
+	var Game = __webpack_require__(2);
+	var Player = __webpack_require__(3);
 	
 	function GameView(dimX, dimY, clockEl, endEl, endTimeEl) {
 	  this.dimX = dimX;
@@ -111,27 +113,29 @@
 	}
 	
 	GameView.MOVES = {
-	  'w':     [ 0,  -0.2],
-	  'up':    [ 0,  -0.2],
-	  'a':     [-0.2, 0],
-	  'left':  [-0.2, 0],
-	  's':     [ 0,   0.2],
-	  'down':  [ 0,   0.2],
-	  'd':     [ 0.2, 0],
-	  'right': [ 0.2, 0],
+	  'w': [0, -0.2],
+	  'up': [0, -0.2],
+	  'a': [-0.2, 0],
+	  'left': [-0.2, 0],
+	  's': [0, 0.2],
+	  'down': [0, 0.2],
+	  'd': [0.2, 0],
+	  'right': [0.2, 0],
 	
-	  'up+left':    [-0.2, -0.2],
-	  'up+right':   [ 0.2, -0.2],
-	  'down+left':  [-0.2,  0.2],
-	  'down+right': [ 0.2,  0.2]
+	  'up+left': [-0.2, -0.2],
+	  'up+right': [0.2, -0.2],
+	  'down+left': [-0.2, 0.2],
+	  'down+right': [0.2, 0.2]
 	};
 	
 	GameView.prototype.mapKeyHandlers = function () {
-	  const player = this.player;
+	  var player = this.player;
 	
-	  Object.keys(GameView.MOVES).forEach( k => {
-	    const move = GameView.MOVES[k];
-	    key(k, () => { player.thrust(move); }); // vendor/keymaster.js
+	  Object.keys(GameView.MOVES).forEach(function (k) {
+	    var move = GameView.MOVES[k];
+	    key(k, function () {
+	      player.thrust(move);
+	    }); // vendor/keymaster.js
 	  });
 	};
 	
@@ -154,13 +158,13 @@
 	GameView.prototype.cycle = function (ctx) {
 	  this.time = Math.floor((Date.now() - this.startTime) / 1000);
 	  if (this.time > 0) {
-	    this.clockEl.innerHTML = `${this.time}`;
+	    this.clockEl.innerHTML = '' + this.time;
 	  }
 	
 	  this.game.step();
 	  this.game.render(ctx);
 	
-	  if (this.game.isOver() === false ) {
+	  if (this.game.isOver() === false) {
 	    requestAnimationFrame(this.cycle.bind(this, ctx));
 	  } else {
 	    this.endingSequence();
@@ -168,7 +172,7 @@
 	};
 	
 	GameView.prototype.endingSequence = function () {
-	  this.endTimeEl.innerHTML = `Completed in ${this.time} seconds`;
+	  this.endTimeEl.innerHTML = 'Completed in ' + this.time + ' seconds';
 	  this.endEl.className = "toplevel-wrapper";
 	  this.clockEl.className = "clock hidden";
 	  window.playing = false;
@@ -176,19 +180,20 @@
 	
 	module.exports = GameView;
 
-
 /***/ },
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	const Player = __webpack_require__(3);
-	const Shape = __webpack_require__(7);
-	const Util = __webpack_require__(5);
-	const Constants = __webpack_require__(6);
+	'use strict';
 	
-	const NUM_SHAPES = 30;
+	var Player = __webpack_require__(3);
+	var Shape = __webpack_require__(7);
+	var Util = __webpack_require__(5);
+	var Constants = __webpack_require__(6);
 	
-	function Game (dimX, dimY) {
+	var NUM_SHAPES = 30;
+	
+	function Game(dimX, dimY) {
 	  this.dimX = dimX;
 	  this.dimY = dimY;
 	  this.shapes = {
@@ -197,11 +202,11 @@
 	    dim: []
 	  };
 	
-	  for (let i = 0; i < NUM_SHAPES; i++) {
+	  for (var i = 0; i < NUM_SHAPES; i++) {
 	    this.addShape();
 	  }
 	
-	  const playerPos = [(dimX / 2), (dimY / 2)];
+	  var playerPos = [dimX / 2, dimY / 2];
 	  this.player = new Player(playerPos, this, this.invalidColors());
 	  this.shapes.player = [this.player];
 	}
@@ -215,7 +220,7 @@
 	Game.prototype.render = function (ctx) {
 	  ctx.clearRect(0, 0, this.dimX, this.dimY);
 	
-	  this.forEachShape ( shape => {
+	  this.forEachShape(function (shape) {
 	    shape.render(ctx);
 	  });
 	
@@ -223,16 +228,18 @@
 	};
 	
 	Game.prototype.checkCollisions = function () {
-	  this.forEachShape ( shape => {
+	  var _this = this;
+	
+	  this.forEachShape(function (shape) {
 	    shape.alreadyCollided = [];
 	  });
-	  
-	  this.forEachShape ( shape => {
-	    if (shape.isCollidedWith(this.player) && shape !== this.player) {
+	
+	  this.forEachShape(function (shape) {
+	    if (shape.isCollidedWith(_this.player) && shape !== _this.player) {
 	      shape.collidedWithPlayer();
 	    }
 	
-	    this.forEachShape ( otherShape => {
+	    _this.forEachShape(function (otherShape) {
 	      if (otherShape !== shape) {
 	        shape.isCollidedWith(otherShape);
 	      }
@@ -241,11 +248,11 @@
 	};
 	
 	Game.prototype.moveShapes = function () {
-	  this.forEachShape(shape => {
+	  this.forEachShape(function (shape) {
 	    shape.adjustForces();
 	  });
 	
-	  this.forEachShape(shape => {
+	  this.forEachShape(function (shape) {
 	    shape.move();
 	  });
 	
@@ -253,7 +260,7 @@
 	};
 	
 	Game.prototype.addShape = function (pos, velocity, radius) {
-	  let shape;
+	  var shape = void 0;
 	  if (!pos) {
 	    pos = Util.randomPos(this.dimX, this.dimY);
 	    shape = new Shape(pos, this);
@@ -261,15 +268,19 @@
 	    shape = new Shape(pos, this, radius, velocity);
 	  }
 	
-	  const clrCode = Object.keys(Constants.COLORS).filter( key => Constants.COLORS[key] === shape.color)[0];
+	  var clrCode = Object.keys(Constants.COLORS).filter(function (key) {
+	    return Constants.COLORS[key] === shape.color;
+	  })[0];
 	
 	  this.shapes[clrCode].push(shape);
 	};
 	
 	Game.prototype.removeShape = function (shape) {
-	  const clrCode = Object.keys(Constants.COLORS).filter( key => Constants.COLORS[key] === shape.color)[0];
+	  var clrCode = Object.keys(Constants.COLORS).filter(function (key) {
+	    return Constants.COLORS[key] === shape.color;
+	  })[0];
 	
-	  const idx = this.shapes[clrCode].indexOf(shape);
+	  var idx = this.shapes[clrCode].indexOf(shape);
 	  if (idx > -1) {
 	    this.shapes[clrCode].splice(idx, 1);
 	  }
@@ -277,8 +288,8 @@
 	
 	Game.prototype.isOver = function () {
 	  // Object.keys(this.shapes).forEach ( color => {
-	  for (let i = 0; i < Object.keys(this.shapes).length; i ++) {
-	    const color = Object.keys(this.shapes)[i];
+	  for (var i = 0; i < Object.keys(this.shapes).length; i++) {
+	    var color = Object.keys(this.shapes)[i];
 	    if (this.shapes[color].length > 0 && color !== "player") {
 	      return false;
 	    }
@@ -287,19 +298,19 @@
 	};
 	
 	Game.prototype.invalidColors = function () {
-	  let colors = {};
-	  Object.keys(Constants.COLORS).forEach( color => {
+	  var colors = {};
+	  Object.keys(Constants.COLORS).forEach(function (color) {
 	    colors[Constants.COLORS[color]] = 0;
 	  });
 	
-	  this.forEachShape ( shape => {
+	  this.forEachShape(function (shape) {
 	    if (!shape.isPlayer) {
 	      colors[shape.color] += 1;
 	    }
 	  });
 	
-	  let emptyColors = [];
-	  Object.keys(colors).forEach( color => {
+	  var emptyColors = [];
+	  Object.keys(colors).forEach(function (color) {
 	    if (colors[color] < 1) {
 	      emptyColors.push(color);
 	    }
@@ -313,8 +324,10 @@
 	};
 	
 	Game.prototype.forEachShape = function (callback) {
-	  Object.keys(this.shapes).forEach( color => {
-	    this.shapes[color].forEach ( shape => {
+	  var _this2 = this;
+	
+	  Object.keys(this.shapes).forEach(function (color) {
+	    _this2.shapes[color].forEach(function (shape) {
 	      callback(shape);
 	    });
 	  });
@@ -322,19 +335,20 @@
 	
 	module.exports = Game;
 
-
 /***/ },
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	const MovingShape = __webpack_require__(4);
-	const Util = __webpack_require__(5);
-	const Constants = __webpack_require__(6);
+	'use strict';
 	
-	const RADIUS = 10;
-	const VELOCITY = [0, 0];
+	var MovingShape = __webpack_require__(4);
+	var Util = __webpack_require__(5);
+	var Constants = __webpack_require__(6);
 	
-	const Player = function (pos, game, invalidColors) {
+	var RADIUS = 10;
+	var VELOCITY = [0, 0];
+	
+	var Player = function Player(pos, game, invalidColors) {
 	  this.isPlayer = true;
 	  this.color = Util.randomColor(invalidColors);
 	  MovingShape.call(this, pos, VELOCITY, RADIUS, this.color, game);
@@ -349,15 +363,16 @@
 	
 	module.exports = Player;
 
-
 /***/ },
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	const Util = __webpack_require__(5);
-	const Constants = __webpack_require__(6);
+	'use strict';
 	
-	function MovingShape (pos, velocity, radius, color, game) {
+	var Util = __webpack_require__(5);
+	var Constants = __webpack_require__(6);
+	
+	function MovingShape(pos, velocity, radius, color, game) {
 	  this.pos = pos;
 	  this.velocity = velocity;
 	  this.radius = radius;
@@ -375,13 +390,7 @@
 	  ctx.fillStyle = this.color;
 	  ctx.beginPath();
 	
-	  ctx.arc(
-	    this.pos[0],
-	    this.pos[1],
-	    this.radius,0,
-	    2 * Math.PI,
-	    false
-	  );
+	  ctx.arc(this.pos[0], this.pos[1], this.radius, 0, 2 * Math.PI, false);
 	
 	  if (this.isPlayer) {
 	    ctx.lineWidth = Constants.PLAYER_STROKE;
@@ -396,28 +405,19 @@
 	  this.ensureBounce(this.pos);
 	
 	  // if (this.isPlayer) {
-	    this.windResit(this.velocity);
+	  this.windResit(this.velocity);
 	  // }
 	
-	  this.pos[0] = this.pos[0] + (this.velocity[0]);
-	  this.pos[1] = this.pos[1] + (this.velocity[1]);
+	  this.pos[0] = this.pos[0] + this.velocity[0];
+	  this.pos[1] = this.pos[1] + this.velocity[1];
 	};
 	
 	MovingShape.prototype.windResit = function () {
-	  const signage = [
-	    (this.velocity[0] < 0) ? -1 : 1,
-	    (this.velocity[1] < 0) ? -1 : 1
-	  ];
+	  var signage = [this.velocity[0] < 0 ? -1 : 1, this.velocity[1] < 0 ? -1 : 1];
 	
-	  const drag = [
-	    Math.pow(this.velocity[0], 2) * this.radius * 0.0002 * signage[0],
-	    Math.pow(this.velocity[1], 2) * this.radius * 0.0002 * signage[1]
-	  ];
+	  var drag = [Math.pow(this.velocity[0], 2) * this.radius * 0.0002 * signage[0], Math.pow(this.velocity[1], 2) * this.radius * 0.0002 * signage[1]];
 	
-	  this.velocity = [
-	    this.velocity[0] - drag[0],
-	    this.velocity[1] - drag[1]
-	  ];
+	  this.velocity = [this.velocity[0] - drag[0], this.velocity[1] - drag[1]];
 	};
 	
 	MovingShape.prototype.adjustForces = function () {
@@ -436,11 +436,11 @@
 	};
 	
 	MovingShape.prototype.bounceOther = function (other) {
-	  if (this.alreadyCollided.indexOf(other) === -1 &&
-	      other.alreadyCollided.indexOf(this) === -1) {
+	  if (this.alreadyCollided.indexOf(other) === -1 && other.alreadyCollided.indexOf(this) === -1) {
 	
-	    const inelasticLoss = 0.9;
-	    let velocityDiff = [], dispDiff = [];
+	    var inelasticLoss = 0.9;
+	    var velocityDiff = [],
+	        dispDiff = [];
 	    velocityDiff[0] = this.velocity[0] - other.velocity[1];
 	    velocityDiff[1] = this.velocity[1] - other.velocity[1];
 	
@@ -452,34 +452,23 @@
 	      this.alreadyCollided.push(other);
 	      other.alreadyCollided.push(this);
 	
-	      let newReflectiveForce = [];
-	      newReflectiveForce[0] = ( this.velocity[0] *
-	        (this.mass - other.mass) +
-	        (2 * other.mass * other.velocity[0])
-	      ) / (this.mass + other.mass);
-	      newReflectiveForce[1] = ( this.velocity[1] *
-	        (this.mass - other.mass) +
-	        (2 * other.mass * other.velocity[1])
-	      ) / (this.mass + other.mass);
+	      var newReflectiveForce = [];
+	      newReflectiveForce[0] = (this.velocity[0] * (this.mass - other.mass) + 2 * other.mass * other.velocity[0]) / (this.mass + other.mass);
+	      newReflectiveForce[1] = (this.velocity[1] * (this.mass - other.mass) + 2 * other.mass * other.velocity[1]) / (this.mass + other.mass);
 	
-	      let newOtherReflectiveForce = [];
-	      newOtherReflectiveForce[0] = ( other.velocity[0] *
-	        (other.mass - this.mass) +
-	        (2 * this.mass * this.velocity[0])
-	      ) / (other.mass + this.mass);
-	      newOtherReflectiveForce[1] = ( other.velocity[1] *
-	        (other.mass - this.mass) +
-	        (2 * this.mass * this.velocity[1])
-	      ) / (other.mass + this.mass);
+	      var newOtherReflectiveForce = [];
+	      newOtherReflectiveForce[0] = (other.velocity[0] * (other.mass - this.mass) + 2 * this.mass * this.velocity[0]) / (other.mass + this.mass);
+	      newOtherReflectiveForce[1] = (other.velocity[1] * (other.mass - this.mass) + 2 * this.mass * this.velocity[1]) / (other.mass + this.mass);
 	
-	      this.reflectiveForce[0] += (newReflectiveForce[0]) * inelasticLoss;
-	      this.reflectiveForce[1] += (newReflectiveForce[1]) * inelasticLoss;
-	      other.reflectiveForce[0] += (newOtherReflectiveForce[0]) * inelasticLoss;
-	      other.reflectiveForce[1] += (newOtherReflectiveForce[1]) * inelasticLoss;
-	  }
+	      this.reflectiveForce[0] += newReflectiveForce[0] * inelasticLoss;
+	      this.reflectiveForce[1] += newReflectiveForce[1] * inelasticLoss;
+	      other.reflectiveForce[0] += newOtherReflectiveForce[0] * inelasticLoss;
+	      other.reflectiveForce[1] += newOtherReflectiveForce[1] * inelasticLoss;
+	    }
 	    // stuck horizontally
-	  } if (Math.abs(this.velocity[0]) + Math.abs(other.velocity[0]) < 0.2) {
-	    let right, left;
+	  }if (Math.abs(this.velocity[0]) + Math.abs(other.velocity[0]) < 0.2) {
+	    var right = void 0,
+	        left = void 0;
 	    if (this.pos[0] < other.pos[0]) {
 	      left = this;
 	      right = other;
@@ -494,7 +483,8 @@
 	
 	    // stuck vertically
 	  } else if (Math.abs(this.velocity[1]) + Math.abs(other.velocity[1]) < 0.2) {
-	    let bottom, top;
+	    var bottom = void 0,
+	        top = void 0;
 	    if (this.pos[1] < other.pos[1]) {
 	      top = this;
 	      bottom = other;
@@ -511,50 +501,66 @@
 	
 	// at canvas boundries
 	MovingShape.prototype.ensureBounce = function (pos) {
-	  const bounce = this.outOfBounds(pos) || { axis: null, negative: false };
+	  var bounce = this.outOfBounds(pos) || { axis: null, negative: false };
 	
-	  let reflection = -1;
-	  let nudge = [0, 0];
-	
+	  var reflection = -1;
+	  var nudge = [0, 0];
 	
 	  if (bounce.x) {
-	    if (bounce.xnegative) { // moving left
-	      if (this.velocity[0] < 0) { this.boundingForce[0] = reflection; }
-	      else if (this.velocity[0] > -0.2 && this.velocity[0] < 0) { nudge[0] = 0.2; }
-	    } else {               // moving right
-	      if (this.velocity[0] > 0) { this.boundingForce[0] = reflection; }
-	      else if (this.velocity[0] < 0.2 && this.velocity[0] > 0) { nudge[0] = -0.2; }
+	    if (bounce.xnegative) {
+	      // moving left
+	      if (this.velocity[0] < 0) {
+	        this.boundingForce[0] = reflection;
+	      } else if (this.velocity[0] > -0.2 && this.velocity[0] < 0) {
+	        nudge[0] = 0.2;
+	      }
+	    } else {
+	      // moving right
+	      if (this.velocity[0] > 0) {
+	        this.boundingForce[0] = reflection;
+	      } else if (this.velocity[0] < 0.2 && this.velocity[0] > 0) {
+	        nudge[0] = -0.2;
+	      }
 	    }
 	  } else if (bounce.y) {
-	    if (bounce.ynegative) { // moving up
-	      if (this.velocity[1] < 0) { this.boundingForce[1] = reflection; }
-	      else if (this.velocity[1] > -0.2 && this.velocity[1] < 0) { nudge[1] = 0.2; }
-	    } else {              // moving down
-	      if (this.velocity[1] > 0) { this.boundingForce[1] = reflection; }
-	      else if (this.velocity[1] < 0.2 && this.velocity[1] > 0) { nudge[1] = -0.2; }
+	    if (bounce.ynegative) {
+	      // moving up
+	      if (this.velocity[1] < 0) {
+	        this.boundingForce[1] = reflection;
+	      } else if (this.velocity[1] > -0.2 && this.velocity[1] < 0) {
+	        nudge[1] = 0.2;
+	      }
+	    } else {
+	      // moving down
+	      if (this.velocity[1] > 0) {
+	        this.boundingForce[1] = reflection;
+	      } else if (this.velocity[1] < 0.2 && this.velocity[1] > 0) {
+	        nudge[1] = -0.2;
+	      }
 	    }
 	  }
-	  if (this === this.game.player && nudge[1] !== 0) { console.log(this.reflectiveForce[1], nudge[1], this.boundingForce[1]); }
+	  if (this === this.game.player && nudge[1] !== 0) {
+	    console.log(this.reflectiveForce[1], nudge[1], this.boundingForce[1]);
+	  }
 	
 	  this.reflectiveForce[0] += nudge[0];
 	  this.reflectiveForce[1] += nudge[1];
 	};
 	
 	MovingShape.prototype.outOfBounds = function (pos) {
-	  let output = {};
+	  var output = {};
 	
-	  if ((pos[0] - this.radius) <= 0) {
-	    output.x = true;    // left
+	  if (pos[0] - this.radius <= 0) {
+	    output.x = true; // left
 	    output.xnegative = true;
-	  } else if ((pos[0] + this.radius) >= this.game.dimX) {
-	    output.x = true;    // right
-	    output.xnegative= false;
-	
-	  } else if ((pos[1] - this.radius) <= 0) {
-	    output.y = true;   //top
-	    output.ynegative= true;
-	  } else if ((pos[1] + this.radius) >= this.game.dimY) {
-	    output.y = true;   //bottom
+	  } else if (pos[0] + this.radius >= this.game.dimX) {
+	    output.x = true; // right
+	    output.xnegative = false;
+	  } else if (pos[1] - this.radius <= 0) {
+	    output.y = true; //top
+	    output.ynegative = true;
+	  } else if (pos[1] + this.radius >= this.game.dimY) {
+	    output.y = true; //bottom
 	    output.ynegative = false;
 	  }
 	
@@ -568,17 +574,17 @@
 	    this.mass = Math.pow(this.radius, 3);
 	
 	    // also pull the circle toward the center of the player
-	    let pullx;
+	    var pullx = void 0;
 	    if (this.game.player.pos[0] < this.pos[0]) {
 	      pullx = -0.7;
-	    } else{
+	    } else {
 	      pullx = 0.7;
 	    }
 	
-	    let pully;
+	    var pully = void 0;
 	    if (this.game.player.pos[1] < this.pos[1]) {
 	      pully = -0.7;
-	    } else{
+	    } else {
 	      pully = 0.7;
 	    }
 	
@@ -589,22 +595,22 @@
 	      this.game.removeShape(this);
 	
 	      // only pick from colors represented in game
-	      let invalidColors = this.game.invalidColors();
-	      (invalidColors.length >= Object.keys(Constants.COLORS).length) ? invalidColors = [] : invalidColors = invalidColors;
+	      var invalidColors = this.game.invalidColors();
+	      invalidColors.length >= Object.keys(Constants.COLORS).length ? invalidColors = [] : invalidColors = invalidColors;
 	      this.game.player.color = Util.randomColor(invalidColors);
 	    }
 	  }
 	};
 	
 	MovingShape.prototype.isCollidedWith = function (other) {
-	  const sumRadii = this.radius + other.radius;
-	  const xDistance = Math.pow((this.pos[0] - other.pos[0]), 2);
-	  const yDistance = Math.pow((this.pos[1] - other.pos[1]), 2);
-	  const totDistance = Math.sqrt((xDistance + yDistance));
+	  var sumRadii = this.radius + other.radius;
+	  var xDistance = Math.pow(this.pos[0] - other.pos[0], 2);
+	  var yDistance = Math.pow(this.pos[1] - other.pos[1], 2);
+	  var totDistance = Math.sqrt(xDistance + yDistance);
 	
 	  if (sumRadii >= totDistance) {
 	    // don't bounce if collision is between player and shape of same color
-	    if ((this.isPlayer && other.color !== this.color) || (!this.isPlayer && !other.isPlayer)) {
+	    if (this.isPlayer && other.color !== this.color || !this.isPlayer && !other.isPlayer) {
 	      this.bounceOther(other);
 	    }
 	    return true;
@@ -615,24 +621,24 @@
 	
 	module.exports = MovingShape;
 
-
 /***/ },
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
-	const Constants = __webpack_require__(6);
+	'use strict';
 	
-	const Util = {
-	  inherits (Child, Parent) {
-	    function Surrogate(){}
+	var Constants = __webpack_require__(6);
+	
+	var Util = {
+	  inherits: function inherits(Child, Parent) {
+	    function Surrogate() {}
 	    Surrogate.constructor = Child;
 	    Surrogate.prototype = Parent.prototype;
 	    Child.prototype = new Surrogate();
 	  },
-	
-	  randomVec (max) {
-	    let x = (Math.random() * max);
-	    let y = Math.sqrt(Math.pow(max, 2) - Math.pow(x, 2));
+	  randomVec: function randomVec(max) {
+	    var x = Math.random() * max;
+	    var y = Math.sqrt(Math.pow(max, 2) - Math.pow(x, 2));
 	
 	    if (Math.random() > 0.5) {
 	      x *= -1;
@@ -643,36 +649,29 @@
 	
 	    return [x, y];
 	  },
+	  randomColor: function randomColor(invalidColors) {
 	
-	  randomColor (invalidColors) {
+	    var codes = Object.keys(Constants.COLORS);
+	    var codeSample = codes[Math.floor(Math.random() * Object.keys(Constants.COLORS).length)];
 	
-	    const codes = Object.keys(Constants.COLORS);
-	    const codeSample = codes[Math.floor(Math.random() * Object.keys(Constants.COLORS).length)];
-	
-	    const sampledColor = Constants.COLORS[codeSample];
+	    var sampledColor = Constants.COLORS[codeSample];
 	    if (invalidColors && invalidColors.indexOf(sampledColor) !== -1) {
 	      return Util.randomColor(invalidColors);
 	    } else {
 	      return sampledColor;
 	    }
 	  },
-	
-	  randomPos (maxWidth, maxHeight) {
-	    return [
-	      Math.floor((Math.random() * (maxWidth - Constants.MAX_RADIUS + 1)) + Constants.MAX_RADIUS),
-	      Math.floor((Math.random() * (maxHeight - Constants.MAX_RADIUS + 1)) + Constants.MAX_RADIUS)
-	    ];
+	  randomPos: function randomPos(maxWidth, maxHeight) {
+	    return [Math.floor(Math.random() * (maxWidth - Constants.MAX_RADIUS + 1) + Constants.MAX_RADIUS), Math.floor(Math.random() * (maxHeight - Constants.MAX_RADIUS + 1) + Constants.MAX_RADIUS)];
 	  },
-	
-	  randomRadius () {
-	    return Math.floor((Math.random() * (Constants.MAX_RADIUS - 6 + 1)) + 6);
+	  randomRadius: function randomRadius() {
+	    return Math.floor(Math.random() * (Constants.MAX_RADIUS - 6 + 1) + 6);
 	  },
-	
-	  dotProduct (arr1, arr2) {
+	  dotProduct: function dotProduct(arr1, arr2) {
 	    // assumes arr1.length === arr2.length
-	    let dotProd = 0;
-	    for (let i = 0; i < arr1.length; i++) {
-	      dotProd += (arr1[i] * arr2[i]);
+	    var dotProd = 0;
+	    for (var i = 0; i < arr1.length; i++) {
+	      dotProd += arr1[i] * arr2[i];
 	    }
 	    return dotProd;
 	  }
@@ -684,12 +683,13 @@
 	window.maxHeight = viewportSize.getHeight() - 4;
 	window.Constants = Constants;
 
-
 /***/ },
 /* 6 */
 /***/ function(module, exports) {
 
-	const Constants = {
+	"use strict";
+	
+	var Constants = {
 	  COLORS: {
 	    bright: "#0cc9c7",
 	    medium: "#308282",
@@ -702,18 +702,19 @@
 	
 	module.exports = Constants;
 
-
 /***/ },
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
-	const Util = __webpack_require__(5);
-	const MovingShape = __webpack_require__(4);
-	const Player = __webpack_require__(3);
+	'use strict';
 	
-	const Shape = function (pos, game, radius, velocity, color) {
+	var Util = __webpack_require__(5);
+	var MovingShape = __webpack_require__(4);
+	var Player = __webpack_require__(3);
+	
+	var Shape = function Shape(pos, game, radius, velocity, color) {
 	  if (!velocity) {
-	    velocity = Util.randomVec(((Math.random() * 0.6) + 0.001));
+	    velocity = Util.randomVec(Math.random() * 0.6 + 0.001);
 	  }
 	
 	  radius = radius || Util.randomRadius();
@@ -726,7 +727,6 @@
 	Util.inherits(Shape, MovingShape);
 	
 	module.exports = Shape;
-
 
 /***/ }
 /******/ ]);

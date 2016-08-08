@@ -1,0 +1,26 @@
+{
+  "name": "color-shift",
+  "version": "1.0.0",
+  "description": "![screenshot][screenshot]",
+  "main": "bundle.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "dependencies": {
+    "babel-loader": "^6.2.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fonsecapeter/color-shift.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fonsecapeter/color-shift/issues"
+  },
+  "homepage": "https://github.com/fonsecapeter/color-shift#readme"
+}

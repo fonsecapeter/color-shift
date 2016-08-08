@@ -7,7 +7,13 @@ module.exports = {
     filename: "bundle.js"
   },
   module: {
-    loaders: [],
+    loaders: [
+        {
+        test: path.join(__dirname),
+        loader: 'babel-loader',
+        query: { presets: 'es2015' }
+      }
+    ]
   },
   devtool: 'source-maps',
   resolve: {
