@@ -70,7 +70,7 @@
 	}
 	
 	window.playing = false;
-	document.addEventListener("keydown", function () {
+	document.addEventListener("keydown", function (event) {
 	  if (!window.playing && event.keyCode === 32) {
 	    startGame();
 	  }
