@@ -1,5 +1,5 @@
 # Color Shift
-### [live](http://peterfonseca.gq/color-shift)
+### [live](http://fonsecapeter.github.io/color-shift)
 
 ![screenshot][screenshot]
 
